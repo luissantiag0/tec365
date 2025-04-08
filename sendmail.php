@@ -1,44 +1,32 @@
 <?php
-
-$destino = "luis.santiago@inslapineda.cat";
-$fromName = "TEC365";
-$fromEmail = "luis.santiago@inslapineda.cat";
-
-
-$name = $_POST['name'] ?? '';
-$surname = $_POST['surname'] ?? '';
-$email = $_POST['email'] ?? '';
-$message = $_POST['message'] ?? '';
-
-if ($name && $surname && $email && $message) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    $subjectToYou = "Nuevo mensaje desde TEC365";
-    $bodyToYou = "Has recibido un nuevo mensaje desde tu formulario web:\n\n"
-               . "Nombre: $name $surname\n"
-               . "Email: $email\n"
-               . "Mensaje:\n$message\n";
-
-    $headersToYou = "From: $fromName <$fromEmail>\r\n";
-    $headersToYou .= "Reply-To: $email\r\n";
-
-    mail($destino, $subjectToYou, $bodyToYou, $headersToYou);
+    $nombre = htmlspecialchars($_POST['name']);
+    $apellido = htmlspecialchars($_POST['surname']);
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $mensaje = htmlspecialchars($_POST['message']);
 
     
-    $subjectToUser = "Gracias por contactar con TEC365";
-    $bodyToUser = "Hola $name,\n\nGracias por contactarnos. Hemos recibido tu mensaje y te responderemos lo antes posible.\n\n"
-                . "Copia de tu mensaje:\n$message\n\n"
-                . "Saludos,\nEquipo TEC365\nhttps://tec365.shop";
-
-    $headersToUser = "From: $fromName <$fromEmail>\r\n";
-
-    mail($email, $subjectToUser, $bodyToUser, $headersToUser);
+    $to = "info@tec365.shop";
+    $subject = "Nuevo mensaje de contacto de " . $nombre . " " . $apellido;
+    
+    
+    $headers = "From: " . $email . "\r\n";
+    $headers .= "Reply-To: " . $email . "\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n"; 
 
     
-    header("Location: https://tec365.shop?mensaje=enviado");
-    exit();
-} else {
+    $body = "<html><body>";
+    $body .= "<h2>Nuevo mensaje de contacto de: " . $nombre . " " . $apellido . "</h2>";
+    $body .= "<p><strong>Email:</strong> " . $email . "</p>";
+    $body .= "<p><strong>Mensaje:</strong><br>" . nl2br($mensaje) . "</p>";
+    $body .= "</body></html>";
+
     
-    header("Location: https://tec365.shop?mensaje=error");
-    exit();
+    if (mail($to, $subject, $body, $headers)) {
+        echo "Gracias por ponerte en contacto con nosotros. Te responderemos pronto.";
+    } else {
+        echo "Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.";
+    }
 }
 ?>
