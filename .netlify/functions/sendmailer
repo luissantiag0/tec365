@@ -1,0 +1,54 @@
+// sendmailer.js
+
+const nodemailer = require('nodemailer');
+
+exports.handler = async function(event, context) {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Método no permitido' })
+    };
+  }
+
+  let data;
+  try {
+    data = JSON.parse(event.body);
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Datos no válidos' })
+    };
+  }
+
+  const { name, surname, email, message } = data;
+
+  // Configura el transporte de nodemailer
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',  // o tu servicio de correo
+    auth: {
+      user: 'tucorreo@gmail.com',
+      pass: 'tucontraseña'
+    }
+  });
+
+  // Configura el correo
+  const mailOptions = {
+    from: email,
+    to: 'destinatario@correo.com',  // correo al que se enviará el mensaje
+    subject: `Nuevo mensaje de ${name} ${surname}`,
+    text: `Nombre: ${name} ${surname}\nCorreo: ${email}\nMensaje: ${message}`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Mensaje enviado exitosamente' })
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Hubo un problema al enviar el correo' })
+    };
+  }
+};
