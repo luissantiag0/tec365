@@ -1,6 +1,6 @@
 [build]
-  publish = "dist"
-  command = "npm run build"
+  publish = "/"
+  command = "echo 'No build process needed' && exit 0"
   functions = "netlify/functions"
 
 [dev]
