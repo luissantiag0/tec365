@@ -9,9 +9,10 @@ exports.handler = async (event) => {
   }
 
   try {
+    // Parsear los datos enviados desde el formulario
     const { name, surname, email, message } = JSON.parse(event.body);
 
-    // Validación básica de los datos
+    // Validación de los campos
     if (!name || !surname || !email || !message) {
       return {
         statusCode: 400,
@@ -19,23 +20,23 @@ exports.handler = async (event) => {
       };
     }
 
-    // Configuración del transporte de Nodemailer para Zoho
+    // Configuración de Nodemailer para enviar el correo
     const transporter = nodemailer.createTransport({
       host: 'smtp.zoho.com',
       port: 465,
-      secure: true, // true para conexiones SSL/TLS
+      secure: true, // Usar SSL
       auth: {
-        user: 'info@tec365.shop', // Tu correo de Zoho
-        pass: process.env.ZOHO_PASS, // Contraseña o App Password configurada en Zoho
+        user: 'info@tec365.shop',  // Tu correo en Zoho
+        pass: process.env.ZOHO_PASS, // Contraseña de Zoho (deberías usar una variable de entorno)
       },
     });
 
-    // Configuración del correo
+    // Configuración del correo a enviar
     const mailOptions = {
-      from: `"${name} ${surname}" <${email}>`, // Remitente
-      to: 'info@tec365.shop', // Tu correo de Zoho
-      subject: 'Nuevo mensaje desde el formulario de contacto', // Asunto
-      text: `Nombre: ${name} ${surname}\nCorreo: ${email}\nMensaje:\n${message}`, // Cuerpo del correo en texto plano
+      from: `"${name} ${surname}" <${email}>`,
+      to: 'info@tec365.shop',
+      subject: 'Nuevo mensaje desde el formulario de contacto',
+      text: `Nombre: ${name} ${surname}\nCorreo: ${email}\nMensaje:\n${message}`,
     };
 
     // Enviar el correo
