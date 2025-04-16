@@ -26,8 +26,8 @@ exports.handler = async (event) => {
       port: 465,
       secure: true, // Usar SSL
       auth: {
-        user: 'info@tec365.shop',  // Tu correo en Zoho
-        pass: process.env.ZOHO_PASS, // Contraseña de Zoho (deberías usar una variable de entorno)
+        user: 'info@tec365.shop',
+        pass: process.env.ZOHO_PASS,
       },
     });
 
