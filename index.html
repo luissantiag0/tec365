@@ -363,7 +363,7 @@
           </div>
         </div>
         <div class="col-lg-6 wow fadeInRight" data-wow-duration="0.5s" data-wow-delay="0.25s">
-          <form id="contact" action="/netlify/functions/sendmailer" method="POST" novalidate>
+          <form id="contact" action="/.netlify/functions/sendmailer" method="POST" novalidate>
             <div class="row">
               <div class="col-lg-6">
                 <fieldset>
@@ -432,7 +432,7 @@
   
       try {
 
-        const response = await fetch('/netlify/functions/sendmailer', {
+        const response = await fetch('/.netlify/functions/sendmailer', {
           method: 'POST',
           body: JSON.stringify(data),
           headers: { 'Content-Type': 'application/json' }
