@@ -1,54 +1,53 @@
-// sendmailer.js
-
+// netlify/functions/sendmailer.js
 const nodemailer = require('nodemailer');
 
-exports.handler = async function(event, context) {
+exports.handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Método no permitido' })
-    };
+    return { statusCode: 405, body: 'Método no permitido' };
   }
 
-  let data;
   try {
-    data = JSON.parse(event.body);
-  } catch (err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Datos no válidos' })
-    };
-  }
+    const data = JSON.parse(event.body);
 
-  const { name, surname, email, message } = data;
-
-  // Configura el transporte de nodemailer
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',  // o tu servicio de correo
-    auth: {
-      user: 'tucorreo@gmail.com',
-      pass: 'tucontraseña'
+    // Validación de los datos (email, nombre, mensaje)
+    if (!data.email || !data.name || !data.surname || !data.message) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Faltan datos obligatorios.' })
+      };
     }
-  });
 
-  // Configura el correo
-  const mailOptions = {
-    from: email,
-    to: 'destinatario@correo.com',  // correo al que se enviará el mensaje
-    subject: `Nuevo mensaje de ${name} ${surname}`,
-    text: `Nombre: ${name} ${surname}\nCorreo: ${email}\nMensaje: ${message}`
-  };
+    // Configurar el transporte de correo con nodemailer
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.zoho.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'info@tec365.shop',
+        pass: process.env.ZOHO_PASS // Asegúrate de que este valor esté correctamente configurado
+      }
+    });
 
-  try {
+    const mailOptions = {
+      from: data.email,
+      to: 'info@tec365.shop',
+      subject: `Nuevo mensaje de ${data.name} ${data.surname}`,
+      text: data.message,
+      html: `<p>${data.message}</p>`
+    };
+
+    // Enviar el correo
     await transporter.sendMail(mailOptions);
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Mensaje enviado exitosamente' })
+      body: JSON.stringify({ message: 'Correo enviado exitosamente' })
     };
   } catch (error) {
+    console.error(error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Hubo un problema al enviar el correo' })
+      body: JSON.stringify({ error: 'Error al enviar el correo.' })
     };
   }
 };
