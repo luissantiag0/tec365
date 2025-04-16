@@ -1,7 +1,7 @@
 [build]
   publish = "dist"
   command = "npm run build"
-  functions = "netlify/functions"  # Asegúrate de que apunte al directorio correcto
+  functions = "netlify/functions"
 
 [dev]
   framework = "#custom"
@@ -13,7 +13,7 @@
   package = "@netlify/plugin-functions-install-core"
 
 [functions]
-  directory = "netlify/functions"  # Funciones de Netlify
+  directory = "netlify/functions"
 
 [redirects]
   [[redirects]]
